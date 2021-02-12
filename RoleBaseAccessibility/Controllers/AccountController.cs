@@ -69,10 +69,10 @@
                         var logindetails = loginInfo.First();
 
                         // Login In.
-                        this.SignInUser(logindetails.username, logindetails.role_id, false);
+                        this.SignInUser(logindetails.username, logindetails.id, false);
 
                         // setting.
-                        this.Session["role_id"] = logindetails.role_id;
+                        this.Session["role_id"] = logindetails.id;
 
                         // Info.
                         return this.RedirectToLocal(returnUrl);
@@ -117,8 +117,12 @@
             return this.RedirectToAction("Login", "Account");
         }
 
-        private void SignInUser(string username, int role_id, bool isPersistent)
+        private void SignInUser(string username, int id, bool isPersistent)
         {
+            //Finding Role
+            var roles = this.databaseManager.RetrieveRole(id);
+
+
             // Initialization.
             var claims = new List<Claim>();
 
@@ -126,7 +130,11 @@
             {
                 // Setting
                 claims.Add(new Claim(ClaimTypes.Name, username));
-                claims.Add(new Claim(ClaimTypes.Role, role_id.ToString()));
+                foreach(var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+                
                 var claimIdenties = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
                 var ctx = Request.GetOwinContext();
                 var authenticationManager = ctx.Authentication;

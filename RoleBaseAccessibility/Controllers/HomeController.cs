@@ -25,7 +25,7 @@
         /// Admin only link method.
         /// </summary>
         /// <returns>Returns - Admin only link view</returns>
-        [Authorize(Roles = "1")]
+        [Authorize(Roles = "Admin")]
         public ActionResult AdminOnlyLink()
         {
             return this.View();
